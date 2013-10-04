@@ -24,10 +24,10 @@ class key{
 		//$this->timehandlerid = $core->irc->registerTimehandler(20000, $this, "th");
 		$core->registerTimeHandler(20000, "whitebotsh", "th");
 		//$core->registerCommand("admin", "whitebotsh", "Avisa a los administradores disponibles.");
-		$core->registerCommand("talk", "whitebotsh", "Habilita o deshabilita el habla del bot. Sintaxis: hablar <si/no>",5);
+		$core->registerCommand("talk", "whitebotsh", "Habilita o deshabilita el habla del bot. Sintaxis: hablar <si/no>",5,"whitesh");
 		
-		$core->registerCommand("chignore", "whitebotsh", "Ignora un usuario en los cambios recientes. Sintaxis: chignore <usuario>",5);
-		$core->registerCommand("dechignore", "whitebotsh", "Designora un usuario en los cambios recientes. Sintaxis: chignore <usuario>",5);
+		$core->registerCommand("chignore", "whitebotsh", "Ignora un usuario en los cambios recientes. Sintaxis: chignore <usuario>",5,"whitesh");
+		$core->registerCommand("dechignore", "whitebotsh", "Designora un usuario en los cambios recientes. Sintaxis: chignore <usuario>",5,"whitesh");
 	}
 	
 	public function chignore(&$irc, &$data, &$core){
