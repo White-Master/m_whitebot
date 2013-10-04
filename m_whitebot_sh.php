@@ -46,12 +46,12 @@ class key{
 		switch($data->messageex[1]){
 			case "yes":
 			case "y":
-				$this->talk = true;
+				$this->hablar = true;
 				$irc->message(SMARTIRC_TYPE_CHANNEL, $data->channel, "Back in action! ;3");
 				break;
 			case "no":
 			case "n":
-				$this->talk = false;
+				$this->hablar = false;
 				$irc->message(SMARTIRC_TYPE_CHANNEL, $data->channel, "Will keep quiet :(");
 			
 		}
