@@ -41,7 +41,7 @@ class key{
                         $s="Se han cambiado los privilegios de [[".$fg->query->recentchanges[0]->title."]] de ".$old." a ".$new;
                     }
             }
-            $irc->send("PRIVMSG #cobot :$s");
+            $irc->send("PRIVMSG #wikivoyage-es :$s");
         }
 
     }
