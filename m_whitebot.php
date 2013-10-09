@@ -84,7 +84,7 @@ class key{
     }
     
     public function __destruct(){
-        $core->irc->unregisterTimeid($this->timehandlerid);
+        $this->core->irc->unregisterTimeid($this->timehandlerid);
     }
 
 
