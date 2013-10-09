@@ -55,7 +55,7 @@ class key{
             switch($fg->query->recentchanges[0]->type){
                 case "edit":
                     $s="03".$fg->query->recentchanges[0]->user." ha 08editado el articulo [[".$fg->query->recentchanges[0]->title."]] con el siguiente comentario: 07".$fg->query->recentchanges[0]->comment;
-                    if(@isset($fg->query->recentchanges[0]->minor)){ $s.="11 Esta es una edición menor."; }else{
+                    if((@isset($fg->query->recentchanges[0]->minor)) && ($fg->query->recentchanges[0]->title=="Wikiviajes:Bugs")){ $s.="11 Esta es una edición menor."; }else{
 						$s.=" \00311http://es.wikivoyage.org/w/index.php?title=Wikiviajes:Bugs&diff";
 					}
                     break;
