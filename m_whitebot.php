@@ -78,7 +78,7 @@ class key{
 						
 					}
             }
-            $irc->send("PRIVMSG #cobot :$s");
+            $irc->send("PRIVMSG #wikivoyage-es :$s");
         }
 
     }
