@@ -54,26 +54,26 @@ class key{
             $this->ts = $fg->query->recentchanges[0]->timestamp;
             switch($fg->query->recentchanges[0]->type){
                 case "edit":
-                    $s="03".$fg->query->recentchanges[0]->user." ha 08editado el articulo [[".$fg->query->recentchanges[0]->title."]] con el siguiente comentario: 07".$fg->query->recentchanges[0]->comment;
+                    $s="03".$fg->query->recentchanges[0]->user." ha editado el articulo \00310[[".$fg->query->recentchanges[0]->title."]]\003 con el siguiente comentario: 07".$fg->query->recentchanges[0]->comment;
                     if(@isset($fg->query->recentchanges[0]->minor)){ $s.="11 Esta es una edición menor."; }elseif($fg->query->recentchanges[0]->title=="Wikiviajes:Bugs"){
 						$s.=" \00311http://es.wikivoyage.org/w/index.php?title=Wikiviajes:Bugs&diff";
 					}
                     break;
                 case "new":
-                    $s="03".$fg->query->recentchanges[0]->user." ha 03creado el articulo [[".$fg->query->recentchanges[0]->title."]] con el siguiente comentario: 07".$fg->query->recentchanges[0]->comment;
+                    $s="03".$fg->query->recentchanges[0]->user." ha creado el articulo \00310[[".$fg->query->recentchanges[0]->title."]]\003 con el siguiente comentario: 07".$fg->query->recentchanges[0]->comment;
                     break;
                 case "log":
 					switch ($fg->query->recentchanges[0]->logtype){
 						case "rights":
 							if($fg->query->recentchanges[0]->rights->old==""){$old="(ninguno)";}else{$old=$fg->query->recentchanges[0]->rights->old;}
 							if($fg->query->recentchanges[0]->rights->new==""){$new="(ninguno)";}else{$new=$fg->query->recentchanges[0]->rights->new;}
-							$s="Se han cambiado los privilegios de [[".$fg->query->recentchanges[0]->title."]] de ".$old." a ".$new;
+							$s="\00303{$fg->query->recentchanges[0]->user}\003 ha cambiado los permisos de \002[[".$fg->query->recentchanges[0]->title."]]\002 de \00304.$old.\003" a \00304".$new\003 con el siguiente comentario: \00307.$fg->query->recentchanges[0]->comment\003;
 							break;
 						 case "block":
-							$s="\00303{$fg->query->recentchanges[0]->user}\003 ha \00305bloqueado\003 a \002[[{$fg->query->recentchanges[0]->title}]]\002. Duración: \002{$fg->query->recentchanges[0]->block->duration}\002. Razón: \00307{$fg->query->recentchanges[0]->comment}";
+							$s="\00303{$fg->query->recentchanges[0]->user}\003 ha bloqueado a \002[[{$fg->query->recentchanges[0]->title}]]\002. Duración: \002{$fg->query->recentchanges[0]->block->duration}\002. Razón: \00307{$fg->query->recentchanges[0]->comment}";
 							break;
 						 case "delete":
-							$s = "\00303{$fg->query->recentchanges[0]->user}\003 ha \00304borrado\003 \002[[{$fg->query->recentchanges[0]->title}]]\002: \00307{$fg->query->recentchanges[0]->comment}\003";
+							$s = "\00303{$fg->query->recentchanges[0]->user}\003 ha borrado \002{$fg->query->recentchanges[0]->title}\002: \00307{$fg->query->recentchanges[0]->comment}\003";
 							break;
 						
 					}
