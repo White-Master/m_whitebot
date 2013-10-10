@@ -70,7 +70,7 @@ class key{
 							$s="\00303{$fg->query->recentchanges[0]->user}\003 ha cambiado los permisos de \002[[".$fg->query->recentchanges[0]->title."]]\002 de \00304".$old."\003 a \00304".$new\003 con el siguiente comentario: \00307.$fg->query->recentchanges[0]->comment \003";
 							break;
 						 case "block":
-							$s="\00303{$fg->query->recentchanges[0]->user}\003 ha bloqueado a \002[[{$fg->query->recentchanges[0]->title}]]\002. Duración: \002{$fg->query->recentchanges[0]->block->duration}\002. Razón: \00307{$fg->query->recentchanges[0]->comment}";
+							$s="\00303{$fg->query->recentchanges[0]->user}\003 ha bloqueado a \002{$fg->query->recentchanges[0]->title}\002. Duración: \002{$fg->query->recentchanges[0]->block->duration}\002. Razón: \00307{$fg->query->recentchanges[0]->comment}";
 							break;
 						 case "delete":
 							$s = "\00303{$fg->query->recentchanges[0]->user}\003 ha borrado \002{$fg->query->recentchanges[0]->title}\002: \00307{$fg->query->recentchanges[0]->comment}\003";
