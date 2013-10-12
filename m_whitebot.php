@@ -54,6 +54,7 @@ class key{
             $this->ts = $fg->query->recentchanges[0]->timestamp;
             switch($fg->query->recentchanges[0]->type){
                 case "edit":
+					if(isset($fg->query->recentchanges[0]->bot)){break;}
                     $s="03".$fg->query->recentchanges[0]->user." ha editado el articulo \00310[[".$fg->query->recentchanges[0]->title."]]\003 con el siguiente comentario: 07".$fg->query->recentchanges[0]->comment;
                     if(@isset($fg->query->recentchanges[0]->minor)){ $s.="11 Esta es una edición menor."; }
 						$s.=" \00311http://es.wikivoyage.org/w/index.php?title=".urlencode(str_replace(" ","_", $fg->query->recentchanges[0]->title))."&diff";
