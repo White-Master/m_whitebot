@@ -11,14 +11,34 @@
 class key{
     private $timehandlerid;
     private $hablar=true;
-    private $core;
     private $ts;
     private $admins=array("siglar", "White_Master", "Hahc21", "AlanL");
 	public function __construct(&$core){
-        $this->core = $core;
-		$this->timehandlerid = $core->irc->registerTimehandler(20000, $this, "th");
+        try {
+			$k = ORM::for_table('chignore')->find_one();
+		}catch(PDOException $e){
+			$query="CREATE TABLE 'chignore' ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 'user' TEXT NOT NULL);";
+			$db = ORM::get_db();
+			$db->exec($query);
+		}
+		//$this->timehandlerid = $core->irc->registerTimehandler(20000, $this, "th");
+		$core->registerTimeHandler(20000, "whitebot", "th");
 		$core->registerCommand("admin", "whitebot", "Avisa a los administradores disponibles.");
 		$core->registerCommand("hablar", "whitebot", "Habilita o deshabilita el habla del bot. Sintaxis: hablar <si/no>",5);
+		
+		$core->registerCommand("chignore", "whitebot", "Ignora un usuario en los cambios recientes. Sintaxis: chignore <usuario>",5);
+		$core->registerCommand("dechignore", "whitebot", "Designora un usuario en los cambios recientes. Sintaxis: chignore <usuario>",5);
+	}
+	
+	public function chignore(&$irc, &$data, &$core){
+		$s = ORM::for_table('chignore')->create();
+		$s->user = $data->messageex[1];
+		$s->save();
+	}
+	
+	public function dechignore(&$irc, &$data, &$core){
+		$s = ORM::for_table('chignore')->where('user', $messageex[1])->find_one();
+		if(method_exists($s, "delete")){$s->delete();}
 	}
 	
 	public function hablar(&$irc, &$data, &$core){
@@ -52,14 +72,19 @@ class key{
         print_r($fg);
         if(($this->ts != $fg->query->recentchanges[0]->timestamp) && ($this->hablar==true)){
             $this->ts = $fg->query->recentchanges[0]->timestamp;
+            
             switch($fg->query->recentchanges[0]->type){
                 case "edit":
 					if(isset($fg->query->recentchanges[0]->bot)){break;}
+					$p = ORM::for_table('chignore')->where('user', $fg->query->recentchanges[0]->user)->find_one();
+					if($p->user){break;}
                     $s="03".$fg->query->recentchanges[0]->user." ha editado el articulo \00310[[".$fg->query->recentchanges[0]->title."]]\003 con el siguiente comentario: 07".$fg->query->recentchanges[0]->comment;
                     if(@isset($fg->query->recentchanges[0]->minor)){ $s.="11 Esta es una edición menor."; }
 						$s.=" \00311http://es.wikivoyage.org/w/index.php?title=".urlencode(str_replace(" ","_", $fg->query->recentchanges[0]->title))."&diff";
                     break;
                 case "new":
+					$p = ORM::for_table('chignore')->where('user', $fg->query->recentchanges[0]->user)->find_one();
+					if($p->user){break;}
                     $s="03".$fg->query->recentchanges[0]->user." ha creado el articulo \00310[[".$fg->query->recentchanges[0]->title."]]\003 con el siguiente comentario: 07".$fg->query->recentchanges[0]->comment;
                     break;
                 case "log":
@@ -78,14 +103,8 @@ class key{
 						
 					}
             }
-            $irc->send("PRIVMSG #wikivoyage-es :$s");
+            $irc->send("PRIVMSG #cobot :$s");
         }
 
     }
-    
-    public function __destruct(){
-        $this->core->irc->unregisterTimeid($this->timehandlerid);
-    }
-
-
 }
