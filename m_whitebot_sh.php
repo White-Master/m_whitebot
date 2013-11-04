@@ -46,13 +46,13 @@ class key{
 		switch($data->messageex[1]){
 			case "yes":
 			case "y":
-				$this->hablar = true;
-				$irc->message(SMARTIRC_TYPE_CHANNEL, $data->channel, "¡De vuelta a la acción! ;3");
+				$this->talk = true;
+				$irc->message(SMARTIRC_TYPE_CHANNEL, $data->channel, "Back in action! ;3");
 				break;
 			case "no":
 			case "n":
-				$this->hablar = false;
-				$irc->message(SMARTIRC_TYPE_CHANNEL, $data->channel, "Me quedaré callado :(");
+				$this->talk = false;
+				$irc->message(SMARTIRC_TYPE_CHANNEL, $data->channel, "Will keep quiet :(");
 			
 		}
 	}
@@ -77,32 +77,32 @@ class key{
 					if(isset($fg->query->recentchanges[0]->bot)){break;}
 					$p = ORM::for_table('chignore')->where('user', $fg->query->recentchanges[0]->user)->find_one();
 					if($p->user){break;}
-                    $s="03".$fg->query->recentchanges[0]->user." ha editado el articulo \00310[[".$fg->query->recentchanges[0]->title."]]\003 con el siguiente comentario: 07".$fg->query->recentchanges[0]->comment;
-                    if(@isset($fg->query->recentchanges[0]->minor)){ $s.="11 Esta es una edición menor."; }
-						$s.=" \00311http://es.wikivoyage.org/w/index.php?title=".urlencode(str_replace(" ","_", $fg->query->recentchanges[0]->title))."&diff";
+                    $s="03".$fg->query->recentchanges[0]->user." has edit \00310[[".$fg->query->recentchanges[0]->title."]]\003 with the following comment: 07".$fg->query->recentchanges[0]->comment;
+                    if(@isset($fg->query->recentchanges[0]->minor)){ $s.="11 This is a minor edit."; }
+						$s.=" \00311https://sh.wikipedia.org/w/index.php?title=".urlencode(str_replace(" ","_", $fg->query->recentchanges[0]->title))."&diff";
                     break;
                 case "new":
 					$p = ORM::for_table('chignore')->where('user', $fg->query->recentchanges[0]->user)->find_one();
 					if($p->user){break;}
-                    $s="03".$fg->query->recentchanges[0]->user." ha creado el articulo \00310[[".$fg->query->recentchanges[0]->title."]]\003 con el siguiente comentario: 07".$fg->query->recentchanges[0]->comment;
+                    $s="03".$fg->query->recentchanges[0]->user." has create \00310[[".$fg->query->recentchanges[0]->title."]]\003 with the following comment: 07".$fg->query->recentchanges[0]->comment;
                     break;
                 case "log":
 					switch ($fg->query->recentchanges[0]->logtype){
 						case "rights":
-							if($fg->query->recentchanges[0]->rights->old==""){$old="(ninguno)";}else{$old=$fg->query->recentchanges[0]->rights->old;}
-							if($fg->query->recentchanges[0]->rights->new==""){$new="(ninguno)";}else{$new=$fg->query->recentchanges[0]->rights->new;}
-							$s="\00303{$fg->query->recentchanges[0]->user}\003 ha cambiado los permisos de \002[[".$fg->query->recentchanges[0]->title."]]\002 de \00304".$old."\003 a \00304".$new."\003 con el siguiente comentario: \00307".$fg->query->recentchanges[0]->comment."\003";
+							if($fg->query->recentchanges[0]->rights->old==""){$old="(none)";}else{$old=$fg->query->recentchanges[0]->rights->old;}
+							if($fg->query->recentchanges[0]->rights->new==""){$new="(none)";}else{$new=$fg->query->recentchanges[0]->rights->new;}
+							$s="\00303{$fg->query->recentchanges[0]->user}\003 changed permissions \002[[".$fg->query->recentchanges[0]->title."]]\002 of \00304".$old."\003 to \00304".$new."\003 con el siguiente comentario: \00307".$fg->query->recentchanges[0]->comment."\003";
 							break;
 						 case "block":
-							$s="\00303{$fg->query->recentchanges[0]->user}\003 ha bloqueado a \002{$fg->query->recentchanges[0]->title}\002. Duración: \002{$fg->query->recentchanges[0]->block->duration}\002. Razón: \00307{$fg->query->recentchanges[0]->comment}";
+							$s="\00303{$fg->query->recentchanges[0]->user}\003 locked \002{$fg->query->recentchanges[0]->title}\002. Duration: \002{$fg->query->recentchanges[0]->block->duration}\002. Reason: \00307{$fg->query->recentchanges[0]->comment}";
 							break;
 						 case "delete":
-							$s = "\00303{$fg->query->recentchanges[0]->user}\003 ha borrado \002{$fg->query->recentchanges[0]->title}\002: \00307{$fg->query->recentchanges[0]->comment}\003";
+							$s = "\00303{$fg->query->recentchanges[0]->user}\003 delete \002{$fg->query->recentchanges[0]->title}\002: \00307{$fg->query->recentchanges[0]->comment}\003";
 							break;
 						
 					}
             }
-            $irc->send("PRIVMSG #cobot :$s");
+            $irc->send("PRIVMSG #wikipedia-sh :$s");
         }
 
     }
