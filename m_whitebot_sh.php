@@ -41,7 +41,7 @@ class key{
 		if(method_exists($s, "delete")){$s->delete();}
 	}
 	
-	public function hablar(&$irc, &$data, &$core){
+	public function talk(&$irc, &$data, &$core){
 		if(!isset($data->messageex[1])){return 0;}
 		switch($data->messageex[1]){
 			case "yes":
