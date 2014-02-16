@@ -85,7 +85,6 @@ class recentchanges:
         wikis = MonitorWiki.select()
         channels = MonitorChan.select()
 
-        lts = {}
         for wiki in wikis:
             resp = "\00306{0}\003:".format(wiki.wiki)
             r = urllib.request.urlopen("http://{0}/w/api.php?action=query&list"
@@ -103,7 +102,7 @@ class recentchanges:
                 continue
             except:
                 pass
-            if log['timestamp'] != lts[wiki.wiki]:
+            if log['timestamp'] != self.lts[wiki.wiki]:
                 if log['type'] == "edit":
                     resp += " \2{0}\2 ha editado ".format(log['user'])
                     resp += "\00310{0}\003 ".format(log['title'])
