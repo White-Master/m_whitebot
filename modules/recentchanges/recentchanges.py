@@ -33,7 +33,7 @@ class recentchanges:
     def listwikis(self, bot, cli, ev):
         wikis = MonitorWiki.select()
         for wiki in wikis:
-            ev.privmsg(ev.target, "\2{0} - {1}".format(wiki.wid, wiki.wiki))
+            cli.privmsg(ev.target, "\2{0} - {1}".format(wiki.wid, wiki.wiki))
 
     def addwiki(self, bot, cli, ev):
         c = MonitorWiki.get(MonitorWiki.wiki == ev.splitd[0])
