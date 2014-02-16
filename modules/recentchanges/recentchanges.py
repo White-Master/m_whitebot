@@ -103,6 +103,7 @@ class recentchanges:
             except:
                 pass
             if log['timestamp'] != self.lts[wiki.wiki]:
+                self.lts[wiki.wiki] = log['timestamp']
                 if log['type'] == "edit":
                     resp += " \2{0}\2 ha editado ".format(log['user'])
                     resp += "\00310{0}\003 ".format(log['title'])
