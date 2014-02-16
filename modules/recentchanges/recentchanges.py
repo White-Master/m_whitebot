@@ -26,6 +26,7 @@ class recentchanges:
 
         core.addTimeHandler(1, self, "monitor")
         self.monitoreoc = True
+        self.lts = {}
 
     def addwiki(self, bot, cli, ev):
         c = MonitorWiki.get(MonitorWiki.wiki == ev.splitd[0])
@@ -94,9 +95,9 @@ class recentchanges:
             jr = json.loads(r.read().decode('utf-8'))
             log = jr['query']['recentchanges'][0]
             try:
-                lts[wiki.wiki]
+                self.lts[wiki.wiki]
             except:
-                lts[wiki.wiki] = 0
+                self.lts[wiki.wiki] = 0
             try:
                 log['bot']
                 continue
