@@ -17,6 +17,8 @@ class recentchanges:
         chelp="Añade una wiki al monitoreo. Sintaxis: addwiki <wiki>")
         core.addCommandHandler("delwiki", self, cpriv=5,
         chelp="Elimina una wiki del monitoreo. Sintaxis: delwiki <wiki>")
+        core.addCommandHandler("listwikis", self, cpriv=5,
+        chelp="Lista las wikis que se están monitoreando.")
         core.addCommandHandler("monitorchan", self, cpriv=5,
         chelp="Añade o elimina canales al monitoreo. Sintaxis: monitoreo <cana"
         "l> <on/off>")
@@ -27,6 +29,11 @@ class recentchanges:
         core.addTimeHandler(1, self, "monitor")
         self.monitoreoc = True
         self.lts = {}
+
+    def listwikis(self, bot, cli, ev):
+        wikis = MonitorWiki.select()
+        for wiki in wikis:
+            ev.privmsg(ev.target, "\2{0} - {1}".format(wiki.wid, wiki.wiki))
 
     def addwiki(self, bot, cli, ev):
         c = MonitorWiki.get(MonitorWiki.wiki == ev.splitd[0])
