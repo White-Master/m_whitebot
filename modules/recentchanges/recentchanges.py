@@ -130,6 +130,8 @@ class recentchanges:
                         resp += "ockip/{0} \00314)".format(log['user'])
                     else:
                         continue
+                else:
+                    continue
                 for chan in channels:
                     cli.privmsg(chan.chan, resp)
 
