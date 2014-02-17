@@ -124,11 +124,11 @@ class recentchanges:
                     self.proclog(wiki, log)
                 else:
                     if self.lts[wiki.wiki] != log3['timestamp']:
-                        self.proclog(wiki, log3)
-                    self.proclog(wiki, log2)
-                    self.proclog(wiki, log)
+                        self.proclog(wiki, log3, cli)
+                    self.proclog(wiki, log2, cli)
+                    self.proclog(wiki, log, cli)
 
-    def proclog(self, wiki, log):
+    def proclog(self, wiki, log, cli):
         resp = "\00306{0}\003:".format(wiki.wiki)
         self.lts[wiki.wiki] = log['timestamp']
         if log['type'] == "edit":
@@ -157,11 +157,12 @@ class recentchanges:
                 resp += "https://{0}/wiki/Special:Bl".format(wiki.wiki)
                 resp += "ockip/{0} \00314)".format(log['user'])
             else:
-                continue
+                return 1
         else:
             continue
         for chan in self.chans:
             cli.privmsg(chan.chan, resp)
+
 
 class MonitorWiki(BaseModel):
     wid = IntegerField(primary_key=True)
