@@ -121,7 +121,7 @@ class recentchanges:
 
             if log['timestamp'] != self.lts[wiki.wiki]:
                 if self.lts[wiki.wiki] == log2['timestamp']:
-                    self.proclog(wiki, log)
+                    self.proclog(wiki, log, cli)
                 else:
                     if self.lts[wiki.wiki] != log3['timestamp']:
                         self.proclog(wiki, log3, cli)
