@@ -111,8 +111,9 @@ class recentchanges:
             try:
                 self.lts[wiki.wiki]
             except:
-                self.lts[wiki.wiki] = log['timestamp']
-                continue
+                #self.lts[wiki.wiki] = log['timestamp']
+                #continue
+                self.lts[wiki.wiki] = 0
             try:
                 log['bot']
                 continue
@@ -151,11 +152,68 @@ class recentchanges:
             resp += "\00302https://{0}/?diff={1}\003".format(
                         wiki.wiki, log['revid'])
         elif log['type'] == "log":
-            if log['logtype'] == "newusers":
+            if log['logtype'] == "newusers" and log['logaction'] == "create":
                 resp += " \2{0}\2 ha creado una ".format(log['user'])
                 resp += "cuenta de usuario. \00314(Bloquear: \00302"
                 resp += "https://{0}/wiki/Special:Bl".format(wiki.wiki)
                 resp += "ockip/{0} \00314)".format(log['user'])
+            elif log['logtype'] == "block" and log['logaction'] == "block":
+                resp += " \00304[Bloqueo]\003: \2{0}\2 ha sido" \
+                                                        .format(log['title'])
+                resp += " bloqueado por \00310{0}\003".format(log['user'])
+                resp += " durante \00304({0})\003".format(
+                                                    log['block']['duration'])
+                resp += " \00314{0}\003".format(log['comment'])
+            elif log['logtype'] == "block" and log['logaction'] == "unblock":
+                resp += " \00303[Desbloqueo]\003: \2{0}\2 ha sido" \
+                                                        .format(log['title'])
+                resp += " desbloqueado por \00310{0}\003".format(log['user'])
+                resp += " \00314({0})\003".format(log['comment'])
+            elif log['logtype'] == "block" and log['logaction'] == "reblock":
+                resp += " \00304[Bloqueo]\003: el bloqueo de \2{0}\2 ha sido" \
+                                                        .format(log['title'])
+                resp += " modificado por \00310{0}\003".format(log['user'])
+                resp += " duración: \00304({0})\003".format(
+                                                    log['block']['duration'])
+                resp += " \00314{0}\003".format(log['comment'])
+            elif log['logtype'] == "move" and log['logaction'] == "move_redir" \
+              or log['logaction'] == "move":
+                resp += " \00312[Traslado]\003: \2{0}\2 ha trasladado" \
+                                                        .format(log['user'])
+                resp += " \00303{0}\003 a ".format(log['title'])
+                resp += "\00303{0}\003".format(
+                                                    log['move']['new_title'])
+                if log['comment'] != "":
+                    resp += " \00314{0}\003".format(log['comment'])
+
+            elif log['logtype'] == "protect" and log['logaction'] == "protect" \
+              or log['logaction'] == "modify" or log['logaction'] == \
+              "move_prot":
+                resp += " \00306[Protección]\003: \2{0}\2 ha protegido" \
+                                                        .format(log['user'])
+                resp += " \00310{0}\003:".format(log['title'])
+                resp += " \00314{0}\003".format(log['0'])
+                if log['comment'] != "":
+                    resp += " \00314{0}\003".format(log['comment'])
+            elif log['logtype'] == "protect" and log['logaction'] == \
+              "unprotect":
+                resp += " \00306[Desprotección]\003: \2{0}\2 ha desprotegido" \
+                                                        .format(log['user'])
+                resp += " \00310{0}\003:".format(log['title'])
+                if log['comment'] != "":
+                    resp += " \00314{0}\003".format(log['comment'])
+            elif log['logtype'] == "delete" and log['logaction'] == "delete":
+                resp += " \00304[Borrado]\003: \2{0}\2 ha borrado" \
+                                                        .format(log['user'])
+                resp += " \00310{0}\003:".format(log['title'])
+                if log['comment'] != "":
+                    resp += " \00314{0}\003".format(log['comment'])
+            elif log['logtype'] == "delete" and log['logaction'] == "restore":
+                resp += " \00304[Borrado]\003: \2{0}\2 ha restaurado" \
+                                                        .format(log['user'])
+                resp += " \00310{0}\003:".format(log['title'])
+                if log['comment'] != "":
+                    resp += " \00314{0}\003".format(log['comment'])
             else:
                 return 1
         else:
