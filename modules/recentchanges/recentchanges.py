@@ -30,6 +30,9 @@ class recentchanges:
         self.monitoreoc = True
         self.lts = {}
 
+        self.wikis = MonitorWiki.select()
+        self.chans = MonitorChan.select()
+
     def listwikis(self, bot, cli, ev):
         wikis = MonitorWiki.select()
         for wiki in wikis:
@@ -54,6 +57,8 @@ class recentchanges:
         else:
             cli.privmsg(ev.target, "\00304Error\003: Esa wiki no se está monit"
             "oreando!")
+        self.wikis = MonitorWiki.select()
+        self.chans = MonitorChan.select()
 
     def monitorchan(self, bot, cli, ev):
         if len(ev.splitd) > 1:
@@ -76,6 +81,8 @@ class recentchanges:
             else:
                 cli.privmsg(ev.target, "\00304Error\003: El monitoreo ya está"
                     " habilitado en \2{0}".format(ev.splitd[0]))
+        self.wikis = MonitorWiki.select()
+        self.chans = MonitorChan.select()
 
     def monitoreo(self, bot, cli, ev):
         if len(ev.splitd) == 0:
@@ -85,14 +92,14 @@ class recentchanges:
             self.monitoreoc = True
         elif ev.splitd[0] == "off" or ev.splitd[0] == "no":
             self.monitoreoc = False
+        self.wikis = MonitorWiki.select()
+        self.chans = MonitorChan.select()
 
     def monitor(self, bot, cli):
         if self.monitoreoc is False:
             return 0
-        wikis = MonitorWiki.select()
-        channels = MonitorChan.select()
 
-        for wiki in wikis:
+        for wiki in self.wikis:
             resp = "\00306{0}\003:".format(wiki.wiki)
             r = urllib.request.urlopen("http://{0}/w/api.php?action=query&list"
                 "=recentchanges&format=json&rcprop=user|comment|flags|title|t"
@@ -140,7 +147,7 @@ class recentchanges:
                         continue
                 else:
                     continue
-                for chan in channels:
+                for chan in self.channels:
                     cli.privmsg(chan.chan, resp)
 
 
