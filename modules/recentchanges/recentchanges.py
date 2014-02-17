@@ -100,56 +100,68 @@ class recentchanges:
             return 0
 
         for wiki in self.wikis:
-            resp = "\00306{0}\003:".format(wiki.wiki)
             r = urllib.request.urlopen("http://{0}/w/api.php?action=query&list"
                 "=recentchanges&format=json&rcprop=user|comment|flags|title|t"
                 "imestamp|loginfo|ids|sizes&rctype=log|edit|new"
                     .format(wiki.wiki))
             jr = json.loads(r.read().decode('utf-8'))
             log = jr['query']['recentchanges'][0]
+            log2 = jr['query']['recentchanges'][1]
+            log3 = jr['query']['recentchanges'][2]
             try:
                 self.lts[wiki.wiki]
             except:
-                self.lts[wiki.wiki] = 0
+                self.lts[wiki.wiki] = log['timestamp']
+                continue
             try:
                 log['bot']
                 continue
             except:
                 pass
-            if log['timestamp'] != self.lts[wiki.wiki]:
-                self.lts[wiki.wiki] = log['timestamp']
-                if log['type'] == "edit":
-                    resp += " \2{0}\2 ha editado ".format(log['user'])
-                    resp += "\00310{0}\003 ".format(log['title'])
-                    elen = log['newlen'] - log['oldlen']
-                    if elen < 0:
-                        mlen = "\00304(" + str(elen) + ")\003"
-                    else:
-                        mlen = "\00303(+" + str(elen) + ")\003"
-                    resp += mlen + " - "
-                    resp += "\00302https://{0}/?diff={1}&oldid={2}\003".format(
-                                wiki.wiki, log['revid'], log['old_revid'])
-                    if log['comment'] != "":
-                        resp += " \00314(Comentario: {0})\003".format(
-                                log['comment'])
-                elif log['type'] == "new":
-                    resp += " \2{0}\2 ha creado ".format(log['user'])
-                    resp += "\00310{0}\003 ".format(log['title'])
-                    resp += "\00302https://{0}/?diff={1}\003".format(
-                                wiki.wiki, log['revid'])
-                elif log['type'] == "log":
-                    if log['logtype'] == "newusers":
-                        resp += " \2{0}\2 ha creado una ".format(log['user'])
-                        resp += "cuenta de usuario. \00314(Bloquear: \00302"
-                        resp += "https://{0}/wiki/Special:Bl".format(wiki.wiki)
-                        resp += "ockip/{0} \00314)".format(log['user'])
-                    else:
-                        continue
-                else:
-                    continue
-                for chan in self.chans:
-                    cli.privmsg(chan.chan, resp)
 
+            if log['timestamp'] != self.lts[wiki.wiki]:
+                if self.lts[wiki.wiki] == log2['timestamp']:
+                    self.proclog(wiki, log)
+                else:
+                    if self.lts[wiki.wiki] != log3['timestamp']:
+                        self.proclog(wiki, log3)
+                    self.proclog(wiki, log2)
+                    self.proclog(wiki, log)
+
+    def proclog(self, wiki, log):
+        resp = "\00306{0}\003:".format(wiki.wiki)
+        self.lts[wiki.wiki] = log['timestamp']
+        if log['type'] == "edit":
+            resp += " \2{0}\2 ha editado ".format(log['user'])
+            resp += "\00310{0}\003 ".format(log['title'])
+            elen = log['newlen'] - log['oldlen']
+            if elen < 0:
+                mlen = "\00304(" + str(elen) + ")\003"
+            else:
+                mlen = "\00303(+" + str(elen) + ")\003"
+            resp += mlen + " - "
+            resp += "\00302https://{0}/?diff={1}&oldid={2}\003".format(
+                        wiki.wiki, log['revid'], log['old_revid'])
+            if log['comment'] != "":
+                resp += " \00314(Comentario: {0})\003".format(
+                        log['comment'])
+        elif log['type'] == "new":
+            resp += " \2{0}\2 ha creado ".format(log['user'])
+            resp += "\00310{0}\003 ".format(log['title'])
+            resp += "\00302https://{0}/?diff={1}\003".format(
+                        wiki.wiki, log['revid'])
+        elif log['type'] == "log":
+            if log['logtype'] == "newusers":
+                resp += " \2{0}\2 ha creado una ".format(log['user'])
+                resp += "cuenta de usuario. \00314(Bloquear: \00302"
+                resp += "https://{0}/wiki/Special:Bl".format(wiki.wiki)
+                resp += "ockip/{0} \00314)".format(log['user'])
+            else:
+                continue
+        else:
+            continue
+        for chan in self.chans:
+            cli.privmsg(chan.chan, resp)
 
 class MonitorWiki(BaseModel):
     wid = IntegerField(primary_key=True)
