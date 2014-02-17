@@ -147,7 +147,7 @@ class recentchanges:
                         continue
                 else:
                     continue
-                for chan in self.channels:
+                for chan in self.chans:
                     cli.privmsg(chan.chan, resp)
 
 
