@@ -159,7 +159,7 @@ class recentchanges:
             else:
                 return 1
         else:
-            continue
+            return 1
         for chan in self.chans:
             cli.privmsg(chan.chan, resp)
 
