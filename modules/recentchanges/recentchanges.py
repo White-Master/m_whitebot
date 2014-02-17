@@ -184,7 +184,7 @@ class recentchanges:
                 resp += "\00303{0}\003".format(
                                                     log['move']['new_title'])
                 if log['comment'] != "":
-                    resp += " \00314{0}\003".format(log['comment'])
+                    resp += " \00314({0})\003".format(log['comment'])
 
             elif log['logtype'] == "protect" and log['logaction'] == "protect" \
               or log['logaction'] == "modify" or log['logaction'] == \
@@ -194,26 +194,41 @@ class recentchanges:
                 resp += " \00310{0}\003:".format(log['title'])
                 resp += " \00314{0}\003".format(log['0'])
                 if log['comment'] != "":
-                    resp += " \00314{0}\003".format(log['comment'])
+                    resp += " \00314({0})\003".format(log['comment'])
             elif log['logtype'] == "protect" and log['logaction'] == \
               "unprotect":
                 resp += " \00306[Desprotección]\003: \2{0}\2 ha desprotegido" \
                                                         .format(log['user'])
                 resp += " \00310{0}\003:".format(log['title'])
                 if log['comment'] != "":
-                    resp += " \00314{0}\003".format(log['comment'])
+                    resp += " \00314({0})\003".format(log['comment'])
             elif log['logtype'] == "delete" and log['logaction'] == "delete":
                 resp += " \00304[Borrado]\003: \2{0}\2 ha borrado" \
                                                         .format(log['user'])
                 resp += " \00310{0}\003:".format(log['title'])
                 if log['comment'] != "":
-                    resp += " \00314{0}\003".format(log['comment'])
+                    resp += " \00314({0})\003".format(log['comment'])
             elif log['logtype'] == "delete" and log['logaction'] == "restore":
                 resp += " \00304[Borrado]\003: \2{0}\2 ha restaurado" \
                                                         .format(log['user'])
                 resp += " \00310{0}\003:".format(log['title'])
                 if log['comment'] != "":
                     resp += " \00314{0}\003".format(log['comment'])
+            elif log['logtype'] == "rights" and log['logaction'] == "rights":
+                resp += " \00312[Permisos]\003: \2{0}\2 ha cambiado los permi" \
+                                                        .format(log['user'])
+                resp += " sos de \00310{0}\003".format(log['title'])
+                if log['rights']['old'] == "":
+                    p1 = "(ninguno)"
+                else:
+                    p1 = log['rights']['old']
+                if log['rights']['new'] == "":
+                    p2 = "(ninguno)"
+                else:
+                    p2 = log['rights']['new']
+                resp += " de \2{0}\2 a \2{1}\2".format(p1, p2)
+                if log['comment'] != "":
+                    resp += " \00314({0})\003".format(log['comment'])
             else:
                 return 1
         else:
