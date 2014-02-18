@@ -36,7 +36,10 @@ class recentchanges:
         self.chans = MonitorChan.select()
         self.activwikis = {}
         self.bot = core
-        core.addHandler("welcome", self, "welcome")
+        if client.connected is False:
+            core.addHandler("on_connect", self, "welcome")
+        else:
+            self.welcome(core, client, None)
 
     def welcome(self, bot, cli, ev):
         for wiki in self.wikis:
