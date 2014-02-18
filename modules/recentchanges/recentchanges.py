@@ -35,9 +35,12 @@ class recentchanges:
         self.wikis = MonitorWiki.select()
         self.chans = MonitorChan.select()
         self.activwikis = {}
+        core.addHandler("welcome", self, "welcome")
+
+    def welcome(self, bot, cli, ev):
         for wiki in self.wikis:
             self.activwikis[wiki.wiki] = True
-            _thread.start_new_thread(self.monitorow, (core, client, wiki))
+            _thread.start_new_thread(self.monitorow, (bot, cli, wiki))
 
     def listwikis(self, bot, cli, ev):
         wikis = MonitorWiki.select()
