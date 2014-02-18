@@ -115,13 +115,6 @@ class recentchanges:
     def monitorow(self, bot, cli, wiki):
         x = 0
         while self.activwikis[wiki.wiki]:
-            if x == 50:
-                return 1
-            if not bot.is_loaded("recentchanges"):
-                x += 1
-                continue
-            else:
-                x = 0
             time.sleep(0.1)
             if self.monitoreoc is False:
                 continue
