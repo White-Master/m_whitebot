@@ -117,7 +117,7 @@ class recentchanges:
                 continue
             r = urllib.request.urlopen("http://{0}/w/api.php?action=query&list"
                 "=recentchanges&format=json&rcprop=user|comment|flags|title|t"
-                "imestamp|loginfo|ids|sizes&rctype=log|edit|new"
+                "imestamp|loginfo|ids|sizes&rctype=log|edit|new&rcshow=!bots"
                     .format(wiki.wiki))
             jr = json.loads(r.read().decode('utf-8'))
             log = jr['query']['recentchanges'][0]
@@ -128,11 +128,6 @@ class recentchanges:
             except:
                 self.lts[wiki.wiki] = log['timestamp']
                 continue
-            try:
-                if log['bot'] == "":
-                    continue
-            except:
-                pass
 
             if log['timestamp'] != self.lts[wiki.wiki]:
                 if self.lts[wiki.wiki] == log2['timestamp']:
