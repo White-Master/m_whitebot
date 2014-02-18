@@ -37,16 +37,9 @@ class recentchanges:
         self.activwikis = {}
         self.bot = core
 
-        if client.connected is False:
-            core.addHandler("on_connect", self, "welcome")
-        else:
-            self.welcome(client, None)
-
-    def welcome(self, cli, ev):
-        time.sleep(1)
         for wiki in self.wikis:
             self.activwikis[wiki.wiki] = True
-            _thread.start_new_thread(self.monitorow, (self.bot, cli, wiki))
+            _thread.start_new_thread(self.monitorow, (self.bot, client, wiki))
 
     def listwikis(self, bot, cli, ev):
         wikis = MonitorWiki.select()
