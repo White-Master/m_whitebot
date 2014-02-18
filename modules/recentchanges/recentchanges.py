@@ -111,9 +111,8 @@ class recentchanges:
             try:
                 self.lts[wiki.wiki]
             except:
-                #self.lts[wiki.wiki] = log['timestamp']
-                #continue
-                self.lts[wiki.wiki] = 0
+                self.lts[wiki.wiki] = log['timestamp']
+                continue
             try:
                 log['bot']
                 continue
