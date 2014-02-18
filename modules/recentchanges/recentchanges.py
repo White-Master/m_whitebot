@@ -47,7 +47,7 @@ class recentchanges:
             self.activwikis[wiki.wiki] = True
             _thread.start_new_thread(self.monitorow, (self.bot, cli, wiki))
 
-    def listwikis(self, cli, ev):
+    def listwikis(self, bot, cli, ev):
         wikis = MonitorWiki.select()
         for wiki in wikis:
             cli.privmsg(ev.target, "\2{0} - {1}".format(wiki.wid, wiki.wiki))
