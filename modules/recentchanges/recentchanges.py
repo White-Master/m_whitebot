@@ -120,8 +120,8 @@ class recentchanges:
 
     def monitorow(self, bot, cli, wiki):
         while self.activwikis[wiki.wiki]:
-            if not bot.is_loaded("recentchanges"):
-                return 0
+            #if not bot.is_loaded("recentchanges"):
+            #    return 0
             time.sleep(0.1)
             if self.monitoreoc is False:
                 continue
