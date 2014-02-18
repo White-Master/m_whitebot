@@ -4,6 +4,7 @@ from peewee.peewee import CharField, IntegerField
 import json
 import urllib.request
 import _thread
+import time
 
 
 class recentchanges:
@@ -27,12 +28,16 @@ class recentchanges:
         core.addCommandHandler("monitoreo", self, cpriv=5,
         chelp="Activa o desactiva el monitoreo. Sintaxis: monitoreo <on/off>")
 
-        core.addTimeHandler(1, self, "monitor")
+        #core.addTimeHandler(1, self, "monitor")
         self.monitoreoc = True
         self.lts = {}
 
         self.wikis = MonitorWiki.select()
         self.chans = MonitorChan.select()
+        self.activwikis = {}
+        for wiki in self.wikis:
+            self.activwikis[wiki.wiki] = True
+            _thread.start_new_thread(self.monitorow, (core, client, wiki))
 
     def listwikis(self, bot, cli, ev):
         wikis = MonitorWiki.select()
@@ -43,6 +48,9 @@ class recentchanges:
         c = MonitorWiki.get(MonitorWiki.wiki == ev.splitd[0])
         if c is False:
             MonitorWiki.create(wiki=ev.splitd[0])
+            self.activwikis[ev.splitd[0]] = True
+            c = MonitorWiki.get(MonitorWiki.wiki == ev.splitd[0])
+            _thread.start_new_thread(self.monitorow, (bot, cli, c))
             cli.privmsg(ev.target, "Se ha empezado a monitorear"
                     " \2{0}".format(ev.splitd[0]))
         else:
@@ -58,8 +66,10 @@ class recentchanges:
         else:
             cli.privmsg(ev.target, "\00304Error\003: Esa wiki no se está monit"
             "oreando!")
+            return 0
         self.wikis = MonitorWiki.select()
         self.chans = MonitorChan.select()
+        del self.activwikis[ev.splitd[0]]
 
     def monitorchan(self, bot, cli, ev):
         if len(ev.splitd) > 1:
@@ -96,41 +106,42 @@ class recentchanges:
         self.wikis = MonitorWiki.select()
         self.chans = MonitorChan.select()
 
-    def monitor(self, bot, cli):
-        for wiki in self.wikis:
-            _thread.start_new_thread(self.monitorow, (bot, cli, wiki))
+    #def monitor(self, bot, cli):
+    #    for wiki in self.wikis:
+    #        _thread.start_new_thread(self.monitorow, (bot, cli, wiki))
 
     def monitorow(self, bot, cli, wiki):
-        if self.monitoreoc is False:
-            return 0
+        while self.activwikis[wiki.wiki]:
+            time.sleep(0.1)
+            if self.monitoreoc is False:
+                continue
+            r = urllib.request.urlopen("http://{0}/w/api.php?action=query&list"
+                "=recentchanges&format=json&rcprop=user|comment|flags|title|t"
+                "imestamp|loginfo|ids|sizes&rctype=log|edit|new"
+                    .format(wiki.wiki))
+            jr = json.loads(r.read().decode('utf-8'))
+            log = jr['query']['recentchanges'][0]
+            log2 = jr['query']['recentchanges'][1]
+            log3 = jr['query']['recentchanges'][2]
+            try:
+                self.lts[wiki.wiki]
+            except:
+                self.lts[wiki.wiki] = log['timestamp']
+                continue
+            try:
+                log['bot']
+                continue
+            except:
+                pass
 
-        r = urllib.request.urlopen("http://{0}/w/api.php?action=query&list"
-            "=recentchanges&format=json&rcprop=user|comment|flags|title|t"
-            "imestamp|loginfo|ids|sizes&rctype=log|edit|new"
-                .format(wiki.wiki))
-        jr = json.loads(r.read().decode('utf-8'))
-        log = jr['query']['recentchanges'][0]
-        log2 = jr['query']['recentchanges'][1]
-        log3 = jr['query']['recentchanges'][2]
-        try:
-            self.lts[wiki.wiki]
-        except:
-            self.lts[wiki.wiki] = log['timestamp']
-            return 1
-        try:
-            log['bot']
-            return 2
-        except:
-            pass
-
-        if log['timestamp'] != self.lts[wiki.wiki]:
-            if self.lts[wiki.wiki] == log2['timestamp']:
-                self.proclog(wiki, log, cli)
-            else:
-                if self.lts[wiki.wiki] != log3['timestamp']:
-                    self.proclog(wiki, log3, cli)
-                self.proclog(wiki, log2, cli)
-                self.proclog(wiki, log, cli)
+            if log['timestamp'] != self.lts[wiki.wiki]:
+                if self.lts[wiki.wiki] == log2['timestamp']:
+                    self.proclog(wiki, log, cli)
+                else:
+                    if self.lts[wiki.wiki] != log3['timestamp']:
+                        self.proclog(wiki, log3, cli)
+                    self.proclog(wiki, log2, cli)
+                    self.proclog(wiki, log, cli)
 
     def proclog(self, wiki, log, cli):
         resp = "\00306{0}\003:".format(wiki.wiki)
