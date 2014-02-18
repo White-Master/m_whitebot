@@ -10,20 +10,17 @@ import time
 class recentchanges:
     def __init__(self, core, client):
         try:
-            MonitorWiki.create_table()
-            MonitorChan.create_table()
+            MonitorWiki2.create_table()
         except:
             pass
 
-        core.addCommandHandler("addwiki", self, cpriv=5,
-        chelp="Añade una wiki al monitoreo. Sintaxis: addwiki <wiki>")
-        core.addCommandHandler("delwiki", self, cpriv=5,
-        chelp="Elimina una wiki del monitoreo. Sintaxis: delwiki <wiki>")
-        core.addCommandHandler("listwikis", self, cpriv=5,
+        core.addCommandHandler("addwiki", self, cpriv=3,
+        chelp="Añade una wiki al monitoreo. Sintaxis: addwiki <canal> <wiki>")
+        core.addCommandHandler("delwiki", self, cpriv=3,
+        chelp="Elimina una wiki del monitoreo. Sintaxis:"
+            " delwiki <canal> <wiki>")
+        core.addCommandHandler("listwikis", self, cpriv=1,
         chelp="Lista las wikis que se están monitoreando.")
-        core.addCommandHandler("monitorchan", self, cpriv=5,
-        chelp="Añade o elimina canales al monitoreo. Sintaxis: monitoreo <cana"
-        "l> <on/off>")
 
         core.addCommandHandler("monitoreo", self, cpriv=5,
         chelp="Activa o desactiva el monitoreo. Sintaxis: monitoreo <on/off>")
@@ -32,70 +29,64 @@ class recentchanges:
         self.monitoreoc = True
         self.lts = {}
 
-        self.wikis = MonitorWiki.select()
-        self.chans = MonitorChan.select()
+        self.wikis = MonitorWiki2.select()
         self.activwikis = {}
         self.bot = core
 
+        core.addHandler("welcome", self, "addstuff")
+
+    def addstuff(self, client, ev):
         for wiki in self.wikis:
             self.activwikis[wiki.wiki] = True
             _thread.start_new_thread(self.monitorow, (self.bot, client, wiki))
 
     def listwikis(self, bot, cli, ev):
-        wikis = MonitorWiki.select()
+        wikis = MonitorWiki2.select()
         for wiki in wikis:
             cli.privmsg(ev.target, "\2{0} - {1}".format(wiki.wid, wiki.wiki))
 
     def addwiki(self, bot, cli, ev):
-        c = MonitorWiki.get(MonitorWiki.wiki == ev.splitd[0])
+        if not len(ev.splitd) > 1:
+            cli.privmsg(ev.target, "\00304Error\003: Faltan parametros")
+        c = MonitorWiki2.get(MonitorWiki2.wiki == ev.splitd[1])
         if c is False:
-            MonitorWiki.create(wiki=ev.splitd[0])
+            MonitorWiki2.create(wiki=ev.splitd[1], chans=[ev.splitd[0]])
             self.activwikis[ev.splitd[0]] = True
-            c = MonitorWiki.get(MonitorWiki.wiki == ev.splitd[0])
+            c = MonitorWiki2.get(MonitorWiki2.wiki == ev.splitd[1])
             _thread.start_new_thread(self.monitorow, (bot, cli, c))
             cli.privmsg(ev.target, "Se ha empezado a monitorear"
-                    " \2{0}".format(ev.splitd[0]))
+                    " \2{0}\2 en \2{1}".format(ev.splitd[1], ev.splitd[0]))
         else:
-            cli.privmsg(ev.target, "\00304Error\003: Ya se está monitoreando"
-                " esa wiki!")
+            for chan in c.chans:
+                if chan == ev.splitd[0]:
+                    cli.privmsg(ev.target, "\00304Error\003: Ya se está monito"
+                        "reando esa wiki!")
+                    return 1
+            c.chans.append(ev.splitd[0])
+            c.save()
+            cli.privmsg(ev.target, "Se ha empezado a monitorear"
+                    " \2{0}\2 en \2{1}".format(ev.splitd[1], ev.splitd[0]))
 
     def delwiki(self, bot, cli, ev):
-        c = MonitorWiki.get(MonitorWiki.wiki == ev.splitd[0])
-        if c is not False:
+        if not len(ev.splitd) > 1:
+            cli.privmsg(ev.target, "\00304Error\003: Faltan parametros")
+        c = MonitorWiki2.get(MonitorWiki2.wiki == ev.splitd[1])
+        if c is not False and c.channels == [ev.splitd[0]]:
             c.delete_instance()
             cli.privmsg(ev.target, "Se ha dejado de monitorear"
-                    " \2{0}".format(ev.splitd[0]))
+                    " \2{0}".format(ev.splitd[1]))
+            del self.activwikis[ev.splitd[1]]
         else:
+            for a, chan in enumerate(c.chans):
+                if chan == ev.splitd[0]:
+                    del c.chans[a]
+                    cli.privmsg(ev.target, "Se ha dejado de monitorear"
+                    " \2{0}\2 en \2{1}".format(ev.splitd[1], ev.splitd[0]))
+                    return 1
             cli.privmsg(ev.target, "\00304Error\003: Esa wiki no se está monit"
             "oreando!")
             return 0
-        self.wikis = MonitorWiki.select()
-        self.chans = MonitorChan.select()
-        del self.activwikis[ev.splitd[0]]
-
-    def monitorchan(self, bot, cli, ev):
-        if len(ev.splitd) > 1:
-            cli.privmsg(ev.target, "\00304Error\003: Faltan parámetros")
-
-        c = MonitorChan.get(MonitorChan.chan == ev.splitd[0])
-        if ev.splitd[1] == "off":
-            if c is False:
-                cli.privmsg(ev.target, "\00304Error\003: El monitoreo no está"
-                    " habilitado en \2{0}".format(ev.splitd[0]))
-            else:
-                c.delete_instance()
-                cli.privmsg(ev.target, "Se ha deshabilitado el monitoreo en "
-                    " \2{0}".format(ev.splitd[0]))
-        else:
-            if c is False:
-                MonitorChan.create(chan=ev.splitd[0])
-                cli.privmsg(ev.target, "Se ha habilitado el monitoreo en "
-                    " \2{0}".format(ev.splitd[0]))
-            else:
-                cli.privmsg(ev.target, "\00304Error\003: El monitoreo ya está"
-                    " habilitado en \2{0}".format(ev.splitd[0]))
-        self.wikis = MonitorWiki.select()
-        self.chans = MonitorChan.select()
+        self.wikis = MonitorWiki2.select()
 
     def monitoreo(self, bot, cli, ev):
         if len(ev.splitd) == 0:
@@ -105,14 +96,19 @@ class recentchanges:
             self.monitoreoc = True
         elif ev.splitd[0] == "off" or ev.splitd[0] == "no":
             self.monitoreoc = False
-        self.wikis = MonitorWiki.select()
-        self.chans = MonitorChan.select()
+        self.wikis = MonitorWiki2.select()
 
     #def monitor(self, bot, cli):
     #    for wiki in self.wikis:
     #        _thread.start_new_thread(self.monitorow, (bot, cli, wiki))
 
     def monitorow(self, bot, cli, wiki):
+        try:
+            self.monitoro(bot, cli, wiki)
+        except:
+            self.monitoro(bot, cli, wiki)
+
+    def monitoro(self, bot, cli, wiki):
         while self.activwikis[wiki.wiki]:
             if bot.is_loaded("recentchanges") is False:
                 continue  # anti-crash?
@@ -246,15 +242,11 @@ class recentchanges:
                 return 1
         else:
             return 1
-        for chan in self.chans:
-            cli.privmsg(chan.chan, resp)
+        for chan in wiki.chans:
+            cli.privmsg(chan, resp)
 
 
-class MonitorWiki(BaseModel):
+class MonitorWiki2(BaseModel):
     wid = IntegerField(primary_key=True)
     wiki = CharField()
-
-
-class MonitorChan(BaseModel):
-    cid = IntegerField(primary_key=True)
-    chan = CharField()
+    chans = CharField()
