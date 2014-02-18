@@ -113,8 +113,9 @@ class recentchanges:
     #        _thread.start_new_thread(self.monitorow, (bot, cli, wiki))
 
     def monitorow(self, bot, cli, wiki):
-        x = 0
         while self.activwikis[wiki.wiki]:
+            if bot.is_loaded("recentchanges") is False:
+                continue  # anti-crash?
             time.sleep(0.1)
             if self.monitoreoc is False:
                 continue
@@ -140,7 +141,6 @@ class recentchanges:
                         self.proclog(wiki, log3, cli)
                     self.proclog(wiki, log2, cli)
                     self.proclog(wiki, log, cli)
-
 
     def proclog(self, wiki, log, cli):
         resp = "\00306{0}\003:".format(wiki.wiki)
