@@ -3,6 +3,7 @@ from pycobot.pycobot import BaseModel
 from peewee.peewee import CharField, IntegerField
 import json
 import urllib.request
+import _thread
 
 
 class recentchanges:
@@ -96,37 +97,40 @@ class recentchanges:
         self.chans = MonitorChan.select()
 
     def monitor(self, bot, cli):
+        for wiki in self.wikis:
+            _thread.start_new_thread(self.monitorow, (bot, cli, wiki))
+
+    def monitorow(self, bot, cli, wiki):
         if self.monitoreoc is False:
             return 0
 
-        for wiki in self.wikis:
-            r = urllib.request.urlopen("http://{0}/w/api.php?action=query&list"
-                "=recentchanges&format=json&rcprop=user|comment|flags|title|t"
-                "imestamp|loginfo|ids|sizes&rctype=log|edit|new"
-                    .format(wiki.wiki))
-            jr = json.loads(r.read().decode('utf-8'))
-            log = jr['query']['recentchanges'][0]
-            log2 = jr['query']['recentchanges'][1]
-            log3 = jr['query']['recentchanges'][2]
-            try:
-                self.lts[wiki.wiki]
-            except:
-                self.lts[wiki.wiki] = log['timestamp']
-                continue
-            try:
-                log['bot']
-                continue
-            except:
-                pass
+        r = urllib.request.urlopen("http://{0}/w/api.php?action=query&list"
+            "=recentchanges&format=json&rcprop=user|comment|flags|title|t"
+            "imestamp|loginfo|ids|sizes&rctype=log|edit|new"
+                .format(wiki.wiki))
+        jr = json.loads(r.read().decode('utf-8'))
+        log = jr['query']['recentchanges'][0]
+        log2 = jr['query']['recentchanges'][1]
+        log3 = jr['query']['recentchanges'][2]
+        try:
+            self.lts[wiki.wiki]
+        except:
+            self.lts[wiki.wiki] = log['timestamp']
+            continue
+        try:
+            log['bot']
+            continue
+        except:
+            pass
 
-            if log['timestamp'] != self.lts[wiki.wiki]:
-                if self.lts[wiki.wiki] == log2['timestamp']:
-                    self.proclog(wiki, log, cli)
-                else:
-                    if self.lts[wiki.wiki] != log3['timestamp']:
-                        self.proclog(wiki, log3, cli)
-                    self.proclog(wiki, log2, cli)
-                    self.proclog(wiki, log, cli)
+        if log['timestamp'] != self.lts[wiki.wiki]:
+            if self.lts[wiki.wiki] == log2['timestamp']:
+                self.proclog(wiki, log, cli)
+            else:
+                if self.lts[wiki.wiki] != log3['timestamp']:
+                    self.proclog(wiki, log3, cli)
+                self.proclog(wiki, log2, cli)
+                self.proclog(wiki, log, cli)
 
     def proclog(self, wiki, log, cli):
         resp = "\00306{0}\003:".format(wiki.wiki)
