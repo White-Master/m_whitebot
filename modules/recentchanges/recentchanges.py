@@ -52,7 +52,7 @@ class recentchanges:
         if c is False:
             ch = []
             ch.append(ev.splitd[0])
-            MonitorWiki2.create(wiki=ev.splitd[1], chans=ch)
+            MonitorWiki2.create(wiki=ev.splitd[1], chans=json.dumps(ch))
             self.activwikis[ev.splitd[1]] = True
             c = MonitorWiki2.get(MonitorWiki2.wiki == ev.splitd[1])
             _thread.start_new_thread(self.monitorow, (bot, cli, c))
@@ -64,7 +64,9 @@ class recentchanges:
                     cli.privmsg(ev.target, "\00304Error\003: Ya se está monito"
                         "reando esa wiki!")
                     return 1
-            c.chans.append(ev.splitd[0])
+            chans = json.loads(c.chans)
+            chans.append(ev.splitd[0])
+            c.chans = json.dumps(chans)
             c.save()
             cli.privmsg(ev.target, "Se ha empezado a monitorear"
                     " \2{0}\2 en \2{1}".format(ev.splitd[1], ev.splitd[0]))
@@ -83,7 +85,7 @@ class recentchanges:
             for a, chan in enumerate(c.chans):
                 if chan == ev.splitd[0]:
                     del chans[a]
-                    c.chans = chans
+                    c.chans = json.dumps(chans)
                     c.save()
                     cli.privmsg(ev.target, "Se ha dejado de monitorear"
                     " \2{0}\2 en \2{1}".format(ev.splitd[1], ev.splitd[0]))
@@ -248,7 +250,6 @@ class recentchanges:
                 return 1
         else:
             return 1
-        print(wiki.chans)
         chans = json.loads(wiki.chans)
         for chan in chans:
             cli.privmsg(chan, resp)
