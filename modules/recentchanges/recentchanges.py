@@ -73,7 +73,7 @@ class recentchanges:
         if not len(ev.splitd) > 1:
             cli.privmsg(ev.target, "\00304Error\003: Faltan parametros")
         c = MonitorWiki2.get(MonitorWiki2.wiki == ev.splitd[1])
-        chans = json.load(c.chans)
+        chans = json.loads(c.chans)
         if c is not False and chans == [ev.splitd[0]]:
             c.delete_instance()
             cli.privmsg(ev.target, "Se ha dejado de monitorear"
@@ -248,7 +248,7 @@ class recentchanges:
                 return 1
         else:
             return 1
-        chans = json.load(wiki.chans)
+        chans = json.loads(wiki.chans)
         for chan in chans:
             cli.privmsg(chan, resp)
 
