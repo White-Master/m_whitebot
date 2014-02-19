@@ -50,7 +50,9 @@ class recentchanges:
             cli.privmsg(ev.target, "\00304Error\003: Faltan parametros")
         c = MonitorWiki2.get(MonitorWiki2.wiki == ev.splitd[1])
         if c is False:
-            MonitorWiki2.create(wiki=ev.splitd[1], chans=[ev.splitd[0]])
+            ch = []
+            ch.append(ev.splitd[0])
+            MonitorWiki2.create(wiki=ev.splitd[1], chans=ch)
             self.activwikis[ev.splitd[1]] = True
             c = MonitorWiki2.get(MonitorWiki2.wiki == ev.splitd[1])
             _thread.start_new_thread(self.monitorow, (bot, cli, c))
@@ -243,7 +245,8 @@ class recentchanges:
                 return 1
         else:
             return 1
-        for chan in wiki.chans:
+        chans = json.load(wiki.chans)
+        for chan in chans:
             cli.privmsg(chan, resp)
 
 
