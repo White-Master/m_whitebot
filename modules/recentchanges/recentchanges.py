@@ -51,7 +51,7 @@ class recentchanges:
         c = MonitorWiki2.get(MonitorWiki2.wiki == ev.splitd[1])
         if c is False:
             MonitorWiki2.create(wiki=ev.splitd[1], chans=[ev.splitd[0]])
-            self.activwikis[ev.splitd[0]] = True
+            self.activwikis[ev.splitd[1]] = True
             c = MonitorWiki2.get(MonitorWiki2.wiki == ev.splitd[1])
             _thread.start_new_thread(self.monitorow, (bot, cli, c))
             cli.privmsg(ev.target, "Se ha empezado a monitorear"
