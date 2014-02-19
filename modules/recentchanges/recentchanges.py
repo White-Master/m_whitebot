@@ -71,7 +71,7 @@ class recentchanges:
         if not len(ev.splitd) > 1:
             cli.privmsg(ev.target, "\00304Error\003: Faltan parametros")
         c = MonitorWiki2.get(MonitorWiki2.wiki == ev.splitd[1])
-        if c is not False and c.channels == [ev.splitd[0]]:
+        if c is not False and c.chans == [ev.splitd[0]]:
             c.delete_instance()
             cli.privmsg(ev.target, "Se ha dejado de monitorear"
                     " \2{0}".format(ev.splitd[1]))
@@ -105,7 +105,8 @@ class recentchanges:
     def monitorow(self, bot, cli, wiki):
         try:
             self.monitoro(bot, cli, wiki)
-        except:
+        except Exception as k:
+            print(k)
             self.monitoro(bot, cli, wiki)
 
     def monitoro(self, bot, cli, wiki):
