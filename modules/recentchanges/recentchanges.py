@@ -248,6 +248,7 @@ class recentchanges:
                 return 1
         else:
             return 1
+        print(wiki.chans)
         chans = json.loads(wiki.chans)
         for chan in chans:
             cli.privmsg(chan, resp)
