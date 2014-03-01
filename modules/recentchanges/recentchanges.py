@@ -112,8 +112,8 @@ class recentchanges:
     def monitorow(self, bot, cli, wiki):
         try:
             self.monitoro(bot, cli, wiki)
-        except Exception as k:
-            print(k)
+        except:
+            # print(k)
             self.monitoro(bot, cli, wiki)
 
     def monitoro(self, bot, cli, wiki):
