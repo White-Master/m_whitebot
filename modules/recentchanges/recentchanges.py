@@ -203,9 +203,9 @@ class recentchanges:
                 if log['comment'] != "":
                     resp += " \00314({0})\003".format(log['comment'])
 
-            elif log['logtype'] == "protect" and log['logaction'] == "protect" \
-              or log['logaction'] == "modify" or log['logaction'] == \
-              "move_prot":
+            elif log['logtype'] == "protect" and (log['logaction'] == "protect"
+              or log['logaction'] == "modify" or log['logaction'] ==
+              "move_prot"):
                 resp += " \00306[Protección]\003: \2{0}\2 ha protegido" \
                                                         .format(log['user'])
                 resp += " \00310{0}\003:".format(log['title'])
