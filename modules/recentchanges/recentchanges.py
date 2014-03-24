@@ -161,13 +161,16 @@ class recentchanges:
             resp += "\00302https://{0}/?diff={1}&oldid={2}\003".format(
                         wiki.wiki, log['revid'], log['old_revid'])
             if log['comment'] != "":
-                resp += " \00314(Comentario: {0})\003".format(
+                resp += " \00314({0})\003".format(
                         log['comment'])
         elif log['type'] == "new":
             resp += " \2{0}\2 ha creado ".format(log['user'])
             resp += "\00310{0}\003 ".format(log['title'])
             resp += "\00302https://{0}/?diff={1}\003".format(
                         wiki.wiki, log['revid'])
+            if log['comment'] != "":
+                resp += " \00314({0})\003".format(
+                        log['comment'])
         elif log['type'] == "log":
             if log['logtype'] == "newusers" and log['logaction'] == "create":
                 resp += " \2{0}\2 ha creado una ".format(log['user'])
