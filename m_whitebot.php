@@ -12,7 +12,7 @@ class key{
     private $timehandlerid;
     private $hablar=true;
     private $ts;
-    private $admins=array("siglar", "White_Master", "Hahc21", "AlanL");
+    private $admins=array("White_Master", "Oscar_.", "Polsaker");
 	public function __construct(&$core){
         try {
 			$k = ORM::for_table('chignore')->find_one();
@@ -54,7 +54,7 @@ class key{
 			case "no":
 			case "n":
 				$this->hablar = false;
-				$irc->message(SMARTIRC_TYPE_CHANNEL, $data->channel, "Me quedaré callado :(");
+				$irc->message(SMARTIRC_TYPE_CHANNEL, $data->channel, "Me quedaré callado :c");
 			
 		}
 	}
@@ -66,7 +66,7 @@ class key{
 	}
     
     function th(&$irc){
-        $fl=file_get_contents("http://es.wikivoyage.org/w/api.php?action=query&list=recentchanges&format=json&rcprop=user|comment|flags|title|timestamp|loginfo");
+        $fl=file_get_contents("http://wikimedia.org.ve/w/api.php?action=query&list=recentchanges&rcprop=user|comment|flags|title|timestamp|loginfo&rawcontinue=");
         $fg=json_decode($fl);
         $s="";
         print_r($fg);
@@ -103,7 +103,7 @@ class key{
 						
 					}
             }
-            $irc->send("PRIVMSG #wikivoyage-es :$s");
+            $irc->send("PRIVMSG #wikimedia-ve :$s");
         }
 
     }
