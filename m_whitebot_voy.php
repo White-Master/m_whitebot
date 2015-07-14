@@ -12,7 +12,7 @@ class key{
     private $timehandlerid;
     private $hablar=true;
     private $ts;
-   // private $admins=array("siglar", "White_Master", "Hahc21", "AlanL");
+   // private $admins=array("siglar", "White_Master", "zerabat", "IrwinSantos");
 	public function __construct(&$core){
         try {
 			$k = ORM::for_table('chignore2')->find_one();
@@ -22,9 +22,9 @@ class key{
 			$db->exec($query);
 		}
 		//$this->timehandlerid = $core->irc->registerTimehandler(20000, $this, "th");
-		$core->registerTimeHandler(20000, "whitebotsh", "th");
+		$core->registerTimeHandler(20000, "whitebotvoy", "th");
 		//$core->registerCommand("admin", "whitebotsh", "Avisa a los administradores disponibles.");
-		$core->registerCommand("talk", "whitebotsh", "Habilita o deshabilita el habla del bot. Sintaxis: hablar <si/no>",5,"whitesh");
+		$core->registerCommand("talk", "whitebotvoy", "Habilita o deshabilita el habla del bot. Sintaxis: hablar <si/no>",5,"whitesh");
 		
 		$core->registerCommand("chignore", "whitebotsh", "Ignora un usuario en los cambios recientes. Sintaxis: chignore <usuario>",5,"whitesh");
 		$core->registerCommand("dechignore", "whitebotsh", "Designora un usuario en los cambios recientes. Sintaxis: chignore <usuario>",5,"whitesh");
@@ -56,13 +56,13 @@ class key{
 			
 		}
 	}
-	/*
+	
 	public function admin(&$irc, &$data, &$core){
 		foreach($this->admins as $admin){
 			$irc->message(SMARTIRC_TYPE_CHANNEL, $admin, "\002{$data->nick}\002 ha solicitado la ayuda de un administrador en {$data->channel}");
 		}
 		$irc->message(SMARTIRC_TYPE_CHANNEL, $data->channel, "Se ha enviado un aviso a los administradores disponibles.");
-	}*/
+	}
     
     function th(&$irc){
         $fl=file_get_contents("http://sh.wikipedia.org/w/api.php?action=query&list=recentchanges&format=json&rcprop=user|comment|flags|title|timestamp|loginfo");
@@ -102,7 +102,7 @@ class key{
 						
 					}
             }
-            $irc->send("PRIVMSG #wikipedia-sh :$s");
+            $irc->send("PRIVMSG #wikivoyage-es :$s");
         }
 
     }
