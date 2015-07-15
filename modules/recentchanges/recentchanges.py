@@ -61,7 +61,7 @@ class recentchanges:
         else:
             for chan in c.chans:
                 if chan == ev.splitd[0]:
-                    cli.privmsg(ev.target, "\00304Error\003: Ya se está monito"
+                    cli.privmsg(ev.target, "\00304Error\003: Ya se está monitoreando"
                         "reando esa wiki!")
                     return 1
             chans = json.loads(c.chans)
