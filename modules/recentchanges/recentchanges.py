@@ -124,8 +124,8 @@ class recentchanges:
             if self.monitoreoc is False:
                 continue
             r = urllib.request.urlopen("http://{0}/w/api.php?action=query&list"
-                "=recentchanges&rcprop=user|comment|flags|title|t"
-                "imestamp|loginfo|ids|sizes&rctype=log|edit|new&rcshow=!bot&rawcontinue="
+                "=recentchanges&format=json&rcprop=user|comment|flags|title|t"
+                "imestamp|loginfo|ids|sizes&rctype=log|edit|new&rcshow=!bot"
                     .format(wiki.wiki))
             jr = json.loads(r.read().decode('utf-8'))
             log = jr['query']['recentchanges'][0]
